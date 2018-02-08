@@ -74,7 +74,7 @@ The `Maintained` column shows:
 | [Raspberry Pi 3](https://www.raspberrypi.org/products/raspberry-pi-3-model-b) |`PLATFORM=rpi3`| Yes | ![Actively maintained](documentation/images/green.svg) |
 | [Renesas RCAR](https://www.renesas.com/en-sg/solutions/automotive/products/rcar-h3.html)|`PLATFORM=rcar`| No | ![Actively maintained](documentation/images/green.svg) |
 | [Rockchip RK322X](http://www.rock-chips.com/a/en/products/RK32_Series/2016/1109/799.html) |`PLATFORM=rockchip-rk322x`| No | ![Actively maintained](documentation/images/green.svg) |
-| [Samsung ARTIK530](https://developer.artik.io/documentation/artik/getting-started) |`PLATFORM=artik530`| Yes | ![Actively maintained](documentation/images/green.svg) |
+| [Samsung ARTIK530](https://developer.artik.io/documentation/artik/getting-started) |`PLATFORM=artik`| Yes | ![Actively maintained](documentation/images/green.svg) |
 | [Spreadtrum SC9860](http://www.spreadtrum.com/en/SC9860GV.html)|`PLATFORM=sprd-sc9860`| No | ![Not maintained](documentation/images/red.svg) v2.1.0 |
 | [STMicroelectronics b2260 - h410 (96boards fmt)](http://www.st.com/web/en/catalog/mmc/FM131/SC999/SS1628/PF258776) |`PLATFORM=stm-b2260`| No | ![Actively maintained](documentation/images/green.svg) |
 | [STMicroelectronics b2120 - h310 / h410](http://www.st.com/web/en/catalog/mmc/FM131/SC999/SS1628/PF258776) |`PLATFORM=stm-cannes`| No | ![Actively maintained](documentation/images/green.svg) |
