@@ -31,34 +31,6 @@
 
 #define STACK_ALIGNMENT			64
 
-#define GIC_BASE			0x01400000
-#define GICC_OFFSET			0x2000
-#define GICD_OFFSET			0x1000
-
-#define DCFG_BASE			0x01EE0000
-#define DCFG_CCSR_BRR			0xE4
-#define DCFG_SCRATCHRW1			0x200
-
-#define CSU_BASE			0x01510000
-#define CSU_CSL_START			0x0
-#define CSU_CSL_END			0xE8
-#define CSU_CSL30			0x78
-#define CSU_CSL37			0x94
-
-/* Central Security Unit register values */
-#define	CSU_ACCESS_ALL			0x00FF00FF
-#define	CSU_ACCESS_SEC_ONLY		0x003F003F
-#define CSU_SETTING_LOCK		0x01000100
-
-/*  DUART 1 */
-#define UART0_BASE			0x021C0500
-/*  DUART 2 */
-#define UART1_BASE			0x021D0500
-/*  LPUART 1 */
-#define UART2_BASE			0x02950000
-/*  LPUART 2 */
-#define UART3_BASE			0x02960000
-
 /* console uart define */
 #define CONSOLE_UART_BASE        UART0_BASE
 #define CONSOLE_BAUDRATE         115200
