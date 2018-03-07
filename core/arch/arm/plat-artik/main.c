@@ -31,8 +31,6 @@ static const struct thread_handlers handlers = {
 	.system_reset = pm_do_nothing,
 };
 
-static struct serial8250_uart_data console_data;
-
 const struct thread_handlers *generic_boot_get_handlers(void)
 {
 	return &handlers;
@@ -42,6 +40,14 @@ static void main_fiq(void)
 {
 	panic();
 }
+
+/*
+ * Register the physical memory area for peripherals etc. Here we are
+ * registering the UART console.
+ */
+register_phys_mem(MEM_AREA_IO_NSEC, CONSOLE_UART_BASE, SERIAL8250_UART_REG_SIZE);
+
+static struct serial8250_uart_data console_data;
 
 void console_init(void)
 {

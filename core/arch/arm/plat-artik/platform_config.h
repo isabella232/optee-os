@@ -8,19 +8,24 @@
 
 #define STACK_ALIGNMENT			64
 
-#define GIC_BASE      0x10220000
-#define GICC_OFFSET   0x2000
-#define GICD_OFFSET   0x1000
+/* dma (O), modem(X), UART0_MODULE */
+#define BASEADDR_UART0		(0xC00A1000)
+/* dma (O), modem(O), pl01115_Uart_modem_MODULE */
+#define BASEADDR_UART1		(0xC00A0000)
+/* dma (O), modem(X), UART1_MODULE */
+#define BASEADDR_UART2		(0xC00A2000)
+/* dma (X), modem(X), pl01115_Uart_nodma0_MODULE */
+#define BASEADDR_UART3		(0xC00A3000)
+/* dma (X), modem(X), pl01115_Uart_nodma1_MODULE */
+#define BASEADDR_UART4		(0xC006D000)
+/* dma (X), modem(X), pl01115_Uart_nodma2_MODULE */
+#define BASEADDR_UART5		(0xC006F000)
 
-#define UART0_BASE    0x11002000
-#define UART1_BASE    0x11003000
-#define UART2_BASE    0x11004000
-#define UART3_BASE    0x11005000
-
-/* console uart define */
-#define CONSOLE_UART_BASE        UART0_BASE
+/* console uart defined for /dev/ttyAMA3 */
+#define CONSOLE_UART_BASE        BASEADDR_UART3
 #define CONSOLE_BAUDRATE         115200
-#define CONSOLE_UART_CLK_IN_HZ   200000000
+/* UART clocks set to 147.5 MHz (147500000 Hz) */
+#define CONSOLE_UART_CLK_IN_HZ   0x08caabe0
 
 /* Platform specific defines */
 #define CFG_DDR_TEETZ_RESERVED_START  0xA8000000
