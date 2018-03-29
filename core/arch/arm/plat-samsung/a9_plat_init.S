@@ -62,7 +62,11 @@ END_FUNC plat_cpu_reset_early
 /* ARTIK platform specific function to calculate core position. */
 FUNC get_core_pos_mpidr , :
 UNWIND(	.fnstart)
-	/* Calculate CorePos = CoreId */
+	/* Note sure why yet, but if we do standard calculation
+	 * Calculate CorePos = (ClusterId * (cores/cluster)) + CoreId 
+	 * then we get the wrong core position from the ARTIK board
+	 * Hence only calculate CorePos = CoreId 
+	*/
 	and	r0, r0, #MPIDR_CPU_MASK
 	bx	lr
 UNWIND(	.fnend)

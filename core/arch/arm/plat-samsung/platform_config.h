@@ -8,12 +8,18 @@
 
 #define STACK_ALIGNMENT			64
 
+/* ARTIK 520/530/530S has 512MB DRAM (Note 530S-1GB doubles this size to 1GB) */
+#define DRAM0_SIZE          0x1F000000
+/* 64MB at top of memory map for factory info etc, also add memory for TEE */
+#define DRAM0_SIZE_NSEC		0x17000000
+
 /* Platform specific defines */
 #if defined(PLATFORM_FLAVOR_artik520)
-#  define DRAM0_BASE                    0x40000000
-#  define CFG_DDR_TEETZ_RESERVED_START  0x57000000
+#  define DRAM0_BASE   0x40000000
+
    /* ARTIK520 has dual core Cortex-A7 */
 #  define CFG_TEE_CORE_NB_CORE          2
+
    /* s3c2410_serial */
 #  define BASEADDR_UART0		           (0x13800000)
    /* s3c2410_serial /dev/ttySAC1 zigbee daemon */
@@ -29,10 +35,11 @@
 #  define CONSOLE_UART_CLK_IN_HZ        0x08caabe0
 
 #elif defined(PLATFORM_FLAVOR_artik530)
-#  define DRAM0_BASE                    0x91000000
-#  define CFG_DDR_TEETZ_RESERVED_START  0xA8000000
+#  define DRAM0_BASE   0x91000000
+
    /* ARTIK530 has quad core Cortex-A9 */
 #  define CFG_TEE_CORE_NB_CORE          4
+
    /* dma (O), modem(X), UART0_MODULE */
 #  define BASEADDR_UART0		           (0xC00A1000)
    /* dma (O), modem(O), pl01115_Uart_modem_MODULE */
@@ -52,73 +59,69 @@
 #  define CONSOLE_UART_CLK_IN_HZ        0x02FAF080
 
 #else
-#error "Unknown platform PLATFORM_FLAVOR"
-#endif
-
-/* memory 63 + 1 MB */
-#define CFG_DDR_TEETZ_RESERVED_SIZE  0x03F00000
-#define CFG_TEE_RAM_VA_SIZE          (1024 * 1024)
-#define CFG_PUB_RAM_SIZE             (1024 * 1024)
-
-/* ARTIK 520/530/530S has 512MB DRAM (Note that 530S-1GB doubles this size) */
-#define DRAM0_SIZE           0x1F000000
-#define DDR_PHYS_START       DRAM0_BASE
-#define DDR_SIZE             DRAM0_SIZE
-#define CFG_DDR_START        DDR_PHYS_START
-#define CFG_DDR_SIZE         DDR_SIZE
-
-#ifndef CFG_DDR_TEETZ_RESERVED_START
-#error "TEETZ reserved DDR start address undef: CFG_DDR_TEETZ_RESERVED_START"
-#endif
-#ifndef CFG_DDR_TEETZ_RESERVED_SIZE
-#error "TEETZ reserved DDR size undefined: CFG_DDR_TEETZ_RESERVED_SIZE"
+#  error "Unknown ARTIK platform PLATFORM_FLAVOR"
 #endif
 
 /*
- * TEE/TZ RAM layout:
+ * Trusted Execution Environment / Trusted Zone memory layout:
  *
- *  +-----------------------------------------+  <- DRAM0_BASE
- *  |  Linux memory                           |
- *  +-----------------------------------------+  <- CFG_DDR_TEETZ_RESERVED_START
- *  | TEETZ private RAM  |  TEE_RAM  1MiB     |   ^
- *  |                    +--------------------+   |
- *  |                    |  TA_RAM   61MiB    |   |
- *  +-----------------------------------------+   | CFG_DDR_TEETZ_RESERVED_SIZE
- *  |                    |      teecore alloc |   |
- *  |  TEE/TZ and NSec   |  PUB_RAM  1MiB ----|   |
- *  |   shared memory    |         NSec alloc |   |
- *  +-----------------------------------------+   v
- *  |  Linux memory (Factory info 64MiB)      |
- *  +-----------------------------------------+  <- DRAM0_BASE + DRAM0_SIZE
- *  
- *  TEE_RAM : 1MByte
- *  PUB_RAM : 1MByte
- *  TA_RAM  : 61MByte
- *  Total   : 63MiB
+ *  +--------------------------------+ <-- DRAM0_BASE + DRAM0_SIZE
+ *  | NSec Linux Factory info 64MB   |
+ *  +--------------------------------+
+ *  | Unused                         |
+ *  +--------------------------------+ <-----
+ *  |                    |      TEE  |      ^
+ *  | TEE/TZ and NSec    |   4MB ----|      | CFG_SHMEM_SIZE
+ *  |   shared memory    |     NSec  |      v
+ *  +--------------------------------+ <-- CFG_SHMEM_START         ^
+ *  |                    |           |      ^                      |
+ *  |                    |  TA_RAM   |      | CFG_TA_RAM_SIZE      |
+ *  |                    |  16MB     |      v                      | TZDRAM_SIZE
+ *  | TEE/TZ secure RAM  +-----------+ <-----                      |
+ *  |                    |  TEE R/W  |      ^                      |
+ *  |                    |   1MB ----|      | CFG_TEE_RAM_VA_SIZE  |
+ *  |                    |  TEE R/X  |      v                      |
+ *  +--------------------------------+ <-- TZDRAM_BASE             v
+ *  |                                |      ^
+ *  | NSec Linux, FDT, rootfs, etc   |      | DRAM0_SIZE_NSEC
+ *  |                                |      v
+ *  +--------------------------------+ <-- DRAM0_BASE
+ *
+ *  TEE RAM   :  1 MB
+ *  TA RAM    : 16 MB
+ *  SHMEM RAM :  4 MB
+ *  Total     : 21 MB (allocated 64MB)
  */
 
-/* define the several memory area sizes */
-#if (CFG_DDR_TEETZ_RESERVED_SIZE < (4 * 1024 * 1024))
-#error "Invalid CFG_DDR_TEETZ_RESERVED_SIZE: at least 4MB expected"
+/* define the secure/shared/not-secure memory areas */
+#define CFG_TEE_RAM_VA_SIZE  (1024 * 1024)
+#define CFG_TEE_RAM_PH_SIZE  (CFG_TEE_RAM_VA_SIZE)
+#define CFG_TA_RAM_SIZE      (16 * 1024 * 1024)
+#define TZDRAM_BASE          ((DRAM0_BASE) + (DRAM0_SIZE_NSEC))
+#define TZDRAM_SIZE          ((CFG_TEE_RAM_PH_SIZE) + (CFG_TA_RAM_SIZE))
+#define CFG_SHMEM_START      ((TZDRAM_BASE) + (TZDRAM_SIZE))
+#define CFG_SHMEM_SIZE       (4 * 1024 * 1024)
+/* Note TEE_RAM must start at reserved DDR start addr */
+#define CFG_TEE_RAM_START    (TZDRAM_BASE)
+#define CFG_TA_RAM_START     ((CFG_TEE_RAM_START) + (CFG_TEE_RAM_PH_SIZE))
+#define CFG_TEE_LOAD_ADDR    (TZDRAM_BASE)
+
+/* make sure the ARTIK flavour has been defined correctly */
+#ifndef DRAM0_BASE
+#  error "No TEE/TZ reserved DDR start address because DRAM0_BASE undefined"
+#endif
+
+/* ARTIK devices do not have SRAM */
+#ifdef TZSRAM_BASE
+#  error "Invalid TZSRAM_BASE, ARTIK devices do not have SRAM "
+#endif
+#ifdef TZSRAM_SIZE
+#  error "Invalid TZSRAM_SIZE, ARTIK devices do not have SRAM "
 #endif
 
 /* Full GlobalPlatform test suite requires CFG_SHMEM_SIZE to be at least 2MB */
-#define CFG_TEE_RAM_PH_SIZE  (CFG_TEE_RAM_VA_SIZE)
-#define CFG_TA_RAM_SIZE      (CFG_DDR_TEETZ_RESERVED_SIZE - \
-                                CFG_TEE_RAM_PH_SIZE - CFG_PUB_RAM_SIZE)
-
-/* define the secure/unsecure memory areas */
-#define TZDRAM_BASE          (CFG_DDR_TEETZ_RESERVED_START)
-#define TZDRAM_SIZE          (CFG_TEE_RAM_PH_SIZE + CFG_TA_RAM_SIZE)
-
-#define CFG_SHMEM_START      (TZDRAM_BASE + TZDRAM_SIZE)
-#define CFG_SHMEM_SIZE       (CFG_PUB_RAM_SIZE)
-
-/* define the memory areas (TEE_RAM must start at reserved DDR start addr) */
-#define CFG_TEE_RAM_START    (TZDRAM_BASE)
-#define CFG_TA_RAM_START     (CFG_TEE_RAM_START + CFG_TEE_RAM_PH_SIZE)
-#ifndef CFG_TEE_LOAD_ADDR
-#define CFG_TEE_LOAD_ADDR    (CFG_TEE_RAM_START)
+#if (CFG_SHMEM_SIZE < (4 * 1024 * 1024))
+#  error "Invalid CFG_SHMEM_SIZE: >= 4MB required for GlobalPlatform test suite"
 #endif
 
 #endif /*PLATFORM_CONFIG_H*/
