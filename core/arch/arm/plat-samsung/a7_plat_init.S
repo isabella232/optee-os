@@ -35,11 +35,11 @@
  * and with ARM registers R0, R1, R2, R3 being scratchable.
  */
 
+#include <arm.h>
 #include <arm32.h>
 #include <arm32_macros.S>
 #include <asm.S>
 #include <kernel/unwind.h>
-#include <platform_config.h>
 
 .section .text
 .balign 4
@@ -55,7 +55,37 @@
  */
 FUNC plat_cpu_reset_early , :
 UNWIND(	.fnstart)
-	// for now do nothing and return from this function call
-	bx	lr
+
+	/*
+	 * Disallow NSec to mask FIQ [bit4: FW=0]
+	 * Allow NSec to manage Imprecise Abort [bit5: AW=1]
+	 * Imprecise Abort trapped to Abort Mode [bit3: EA=0]
+	 * In Sec world, FIQ trapped to FIQ Mode [bit2: FIQ=0]
+	 * IRQ always trapped to IRQ Mode [bit1: IRQ=0]
+	 * Secure World [bit0: NS=0]
+	 */
+	mov r0, #SCR_AW
+
+	/* ToDo: this can not be done unless U-Boot has launched OPTEE in
+	 * secure mode. 'Normal' U-Boot jumps to supervisor mode, so we can
+	 * not execute this instruction from this normal world - and we need
+	 * a modified secure U-Boot */
+	//ToDo write_scr r0		/* write Secure Configuration Register */
+
+	mov pc, lr
 UNWIND(	.fnend)
 END_FUNC plat_cpu_reset_early
+
+/* overload with ARTIK platform specific function to calculate core position */
+FUNC get_core_pos_mpidr , :
+UNWIND(	.fnstart)
+	/* Note sure why yet, but if we do standard calculation
+	 * Calculate CorePos = (ClusterId * (cores/cluster)) + CoreId 
+	 * then we get the wrong core position from the ARTIK board
+	 * Hence only calculate CorePos = CoreId 
+	*/
+	and	r0, r0, #MPIDR_CPU_MASK
+	bx	lr
+UNWIND(	.fnend)
+END_FUNC get_core_pos_mpidr
+

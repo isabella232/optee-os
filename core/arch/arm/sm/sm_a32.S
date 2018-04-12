@@ -407,7 +407,11 @@ UNWIND(	.fnstart)
 #endif
 	/* Set monitor vector (MVBAR) */
 1:	ldr	r0, =sm_vect_table
-2:	write_mvbar r0
+	/* ToDo: this can not be done unless U-Boot has launched OPTEE in
+	 * secure mode. 'Normal' U-Boot jumps to supervisor mode, so we can
+	 * not execute this instruction from this normal world - so we need
+	 * a modified secure U-Boot */ 
+2:	//ToDo write_mvbar r0
 
 	bx	lr
 END_FUNC sm_init
@@ -416,6 +420,9 @@ KEEP_PAGER sm_init
 
 /* struct sm_nsec_ctx *sm_get_nsec_ctx(void); */
 FUNC sm_get_nsec_ctx , :
+	/* ToDo: this will have no effect unless U-Boot has launched OPTEE in
+	 * secure mode. 'Normal' U-Boot jumps to supervisor mode, so we need
+	 * a modified secure U-Boot for this to work as expected. */ 
 	mrs	r1, cpsr
 	cps	#CPSR_MODE_MON
 	mov	r0, sp

@@ -100,11 +100,12 @@ void init_sec_mon(unsigned long nsec_entry __maybe_unused)
 __weak void init_sec_mon(unsigned long nsec_entry)
 {
 	struct sm_nsec_ctx *nsec_ctx;
-
+	FMSG("Normal world entry point 0x%08X", (unsigned int)nsec_entry);
 	assert(nsec_entry != PADDR_INVALID);
 
 	/* Initialize secure monitor */
 	nsec_ctx = sm_get_nsec_ctx();
+	DMSG("Unless U-Boot is running in secure mode, sm_get_nsec_ctx has no effect");
 	nsec_ctx->mon_lr = nsec_entry;
 	nsec_ctx->mon_spsr = CPSR_MODE_SVC | CPSR_I;
 
@@ -119,7 +120,8 @@ static void init_vfp_nsec(void)
 static void init_vfp_nsec(void)
 {
 	/* Normal world can use CP10 and CP11 (SIMD/VFP) */
-	write_nsacr(read_nsacr() | NSACR_CP10 | NSACR_CP11);
+	MSG("TODO: debug init_vfp_nsec function!");
+/* TODO: 	write_nsacr(read_nsacr() | NSACR_CP10 | NSACR_CP11); */
 }
 #endif
 
@@ -743,7 +745,7 @@ static void init_fdt(unsigned long phys_fdt)
 {
 	void *fdt;
 	int ret;
-
+	FMSG("Using FDT blob at physical address 0x%08X", (unsigned int)phys_fdt);
 	if (!phys_fdt) {
 		EMSG("Device Tree missing");
 		/*
@@ -793,6 +795,7 @@ static void init_fdt(unsigned long phys_fdt)
 #else
 static void init_fdt(unsigned long phys_fdt __unused)
 {
+	DMSG("CFG_DT not defined: no flattened device tree available");
 }
 
 static void reset_dt_references(void)
@@ -818,6 +821,7 @@ static void init_primary_helper(unsigned long pageable_part,
 	thread_init_primary(generic_boot_get_handlers());
 	thread_init_per_cpu();
 	init_sec_mon(nsec_entry);
+
 	init_fdt(fdt);
 	configure_console_from_dt(fdt);
 
@@ -875,6 +879,7 @@ void generic_boot_init_primary(unsigned long pageable_part,
 			       unsigned long nsec_entry, unsigned long fdt)
 {
 	init_primary_helper(pageable_part, nsec_entry, fdt);
+FMSG("return from generic_boot_init_primary");
 }
 
 void generic_boot_init_secondary(unsigned long nsec_entry)

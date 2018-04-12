@@ -30,9 +30,10 @@
 #  define BASEADDR_UART3		           (0x13830000)
    /* console UART defined for /dev/ttySAC2 */
 #  define CONSOLE_UART_BASE             BASEADDR_UART2
-#  define CONSOLE_BAUDRATE              115200
-   /* UART clocks set to 147.5 MHz (147500000 Hz) ToDo: Check This!*/
-#  define CONSOLE_UART_CLK_IN_HZ        0x08caabe0
+/* rely on bootloader to set clock divisor; trouble determining clock rate */
+#  define CONSOLE_BAUDRATE              0
+   /* EXYNOS4210 UART clocks set to 0.75Mz */
+#  define CONSOLE_UART_CLK_IN_HZ		750000
 
 #elif defined(PLATFORM_FLAVOR_artik530)
 #  define DRAM0_BASE   0x91000000
@@ -62,12 +63,16 @@
 #  error "Unknown ARTIK platform PLATFORM_FLAVOR"
 #endif
 
+#define GIC_BASE			0x00A00000
+#define GICD_OFFSET			0x1000
+#define GICC_OFFSET			0x100
+
 /*
  * Trusted Execution Environment / Trusted Zone memory layout:
  *
  *  +--------------------------------+ <-- DRAM0_BASE + DRAM0_SIZE
- *  | NSec Linux Factory info 64MB   |
- *  +--------------------------------+
+ *  | NSec Linux Factory Info 64MB   |      ^ 0x04000000
+ *  +--------------------------------+ <----v
  *  | Unused                         |
  *  +--------------------------------+ <-----
  *  |                    |      TEE  |      ^
@@ -122,6 +127,11 @@
 /* Full GlobalPlatform test suite requires CFG_SHMEM_SIZE to be at least 2MB */
 #if (CFG_SHMEM_SIZE < (4 * 1024 * 1024))
 #  error "Invalid CFG_SHMEM_SIZE: >= 4MB required for GlobalPlatform test suite"
+#endif
+
+#ifndef ASM
+	/* ToDo: this is temporary debug */
+	void debug_reset_primary(int smc_call);
 #endif
 
 #endif /*PLATFORM_CONFIG_H*/

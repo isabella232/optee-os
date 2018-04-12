@@ -45,6 +45,8 @@
 
 static void call_initcalls(void)
 {
+	MSG("TODO: debug call_initcalls!");
+/*
 	const initcall_t *call;
 
 	for (call = &__initcall_start; call < &__initcall_end; call++) {
@@ -55,6 +57,7 @@ static void call_initcalls(void)
 			     (vaddr_t)call);
 		}
 	}
+*/
 }
 
 /*

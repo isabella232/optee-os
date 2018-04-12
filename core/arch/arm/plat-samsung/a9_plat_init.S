@@ -38,6 +38,7 @@
 #include <arm32_macros.S>
 #include <arm32_macros_cortex_a9.S>
 #include <asm.S>
+#include <kernel/tz_ssvce_def.h>
 #include <kernel/unwind.h>
 #include <platform_config.h>
 
@@ -54,12 +55,28 @@
  */
 FUNC plat_cpu_reset_early , :
 UNWIND(	.fnstart)
-	// for now do nothing and return from this function call
-	bx	lr
+
+	/*
+	 * Disallow NSec to mask FIQ [bit4: FW=0]
+	 * Allow NSec to manage Imprecise Abort [bit5: AW=1]
+	 * Imprecise Abort trapped to Abort Mode [bit3: EA=0]
+	 * In Sec world, FIQ trapped to FIQ Mode [bit2: FIQ=0]
+	 * IRQ always trapped to IRQ Mode [bit1: IRQ=0]
+	 * Secure World [bit0: NS=0]
+	 */
+	mov r0, #SCR_AW
+
+	/* ToDo: this can not be done unless U-Boot has launched OPTEE in
+	 * secure mode. 'Normal' U-Boot jumps to supervisor mode, so we can
+	 * not execute this instruction from this normal world - and we need
+	 * a modified secure U-Boot */
+	//ToDo write_scr r0		/* write Secure Configuration Register */
+
+	mov pc, lr
 UNWIND(	.fnend)
 END_FUNC plat_cpu_reset_early
 
-/* ARTIK platform specific function to calculate core position. */
+/* overload with ARTIK platform specific function to calculate core position */
 FUNC get_core_pos_mpidr , :
 UNWIND(	.fnstart)
 	/* Note sure why yet, but if we do standard calculation
@@ -71,26 +88,3 @@ UNWIND(	.fnstart)
 	bx	lr
 UNWIND(	.fnend)
 END_FUNC get_core_pos_mpidr
-
-
-FUNC debug_break , :
-UNWIND(	.fnstart)
-
-	mov r0, #SCR_AW
-	write_scr r0
-	mov_imm r0, 0x00004000
-	write_sctlr r0
-
-	mov_imm r0, 0x00000041
-	write_actlr r0
-
-	mov_imm r0, 0x00020C00
-	write_nsacr r0
-
-	read_pcr r0
-	orr r0, r0, #0x1
-	write_pcr r0
-
-	mov pc, lr
-UNWIND(	.fnend)
-END_FUNC debug_break

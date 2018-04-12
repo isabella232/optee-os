@@ -494,6 +494,7 @@ shadow_stack_access_ok:
 
 	mov	r0, #TEESMC_OPTEED_RETURN_ENTRY_DONE
 	smc	#0
+	bl	debug_reset_primary
 	b	.	/* SMC should not return */
 UNWIND(	.fnend)
 END_FUNC reset_primary

@@ -925,7 +925,9 @@ static void init_sec_mon(size_t pos __maybe_unused)
 {
 #if !defined(CFG_WITH_ARM_TRUSTED_FW)
 	/* Initialize secure monitor */
-	sm_init(GET_STACK(stack_tmp[pos]));
+MSG("TODO: initialisation of ARM Secure Monitor! when U-Boot is secure");
+//	sm_init(GET_STACK(stack_tmp[pos]));
+MSG("Returned from sm_init, U-Boot is running in secure mode?");
 #endif
 }
 
@@ -933,6 +935,7 @@ void thread_init_per_cpu(void)
 {
 	size_t pos = get_core_pos();
 	struct thread_core_local *l = thread_get_core_local();
+	DMSG("core position %d with thread_core_local = %p", pos, (void *)l);
 
 	init_sec_mon(pos);
 

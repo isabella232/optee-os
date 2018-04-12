@@ -60,6 +60,7 @@ void configure_console_from_dt(unsigned long phys_fdt)
 	int offs;
 	char *p;
 
+	FMSG("Configure console from FDT at 0x%08X", (unsigned int)phys_fdt);
 	if (!phys_fdt)
 		return;
 	fdt = phys_to_virt(phys_fdt, MEM_AREA_IO_NSEC);
@@ -67,8 +68,11 @@ void configure_console_from_dt(unsigned long phys_fdt)
 		panic();
 
 	offs = fdt_path_offset(fdt, "/secure-chosen");
-	if (offs < 0)
+	if (offs < 0) {
+		DMSG("/secure-chosen not found in FDT, return with no action");
 		return;
+	}
+
 	prop = fdt_get_property(fdt, offs, "stdout-path", NULL);
 	if (!prop) {
 		/*
@@ -81,8 +85,11 @@ void configure_console_from_dt(unsigned long phys_fdt)
 	}
 
 	stdout_data = strdup(prop->data);
-	if (!stdout_data)
+	if (!stdout_data) {
+		DMSG("Null stdout_data, return with no action");
 		return;
+	}
+	
 	p = strchr(stdout_data, ':');
 	if (p) {
 		*p = '\0';
@@ -95,6 +102,7 @@ void configure_console_from_dt(unsigned long phys_fdt)
 		/* Not an alias, assume we have a node path */
 		uart = stdout_data;
 	}
+
 	offs = fdt_path_offset(fdt, uart);
 	if (offs < 0)
 		goto out;
@@ -122,6 +130,7 @@ void configure_console_from_dt(unsigned long phys_fdt)
 	IMSG("Switching console to device: %s", uart);
 	register_serial_console(dev);
 out:
+	FMSG("Configured console for %s", uart);
 	free(stdout_data);
 }
 

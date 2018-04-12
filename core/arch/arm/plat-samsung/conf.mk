@@ -20,18 +20,22 @@ CFG_CRYPTO_SIZE_OPTIMIZATION ?= n
 CFG_WITH_STACK_CANARIES ?= y
 CFG_WITH_STATS ?= y
 
+CFG_NUM_THREADS ?= 4
+
 # turn off Spectre and Meltdown workarounds if necessary
 # CFG_CORE_WORKAROUND_SPECTRE_BP ?= n
 
 ifeq ($(PLATFORM_FLAVOR),artik520)
   CFG_NS_ENTRY_ADDR ?= 0x40008000
   CFG_DT_ADDR ?= 0x40800000
+  CFG_DT ?= y
   include core/arch/arm/cpu/cortex-a7.mk
 endif
 
 ifeq ($(PLATFORM_FLAVOR),artik530)
   CFG_NS_ENTRY_ADDR ?= 0x91080000
   CFG_DT_ADDR ?= 0x9B000000
+  CFG_DT ?= y
   include core/arch/arm/cpu/cortex-a9.mk
 endif
 
