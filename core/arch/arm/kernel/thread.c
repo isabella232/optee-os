@@ -925,9 +925,9 @@ static void init_sec_mon(size_t pos __maybe_unused)
 {
 #if !defined(CFG_WITH_ARM_TRUSTED_FW)
 	/* Initialize secure monitor */
-MSG("TODO: initialisation of ARM Secure Monitor! when U-Boot is secure");
-//	sm_init(GET_STACK(stack_tmp[pos]));
-MSG("Returned from sm_init, U-Boot is running in secure mode?");
+	IMSG("Initialisation of ARM into Secure Monitor Mode needs a secure board");
+	sm_init(GET_STACK(stack_tmp[pos]));
+	IMSG("Returned from sm_init, U-Is OPTEE running in secure mode? 0x%08X", read_cpsr() );
 #endif
 }
 

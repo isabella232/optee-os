@@ -105,7 +105,7 @@ __weak void init_sec_mon(unsigned long nsec_entry)
 
 	/* Initialize secure monitor */
 	nsec_ctx = sm_get_nsec_ctx();
-	DMSG("Unless U-Boot is running in secure mode, sm_get_nsec_ctx has no effect");
+	DMSG("Unless board supports secure mode, OPTEE function sm_get_nsec_ctx has no effect");
 	nsec_ctx->mon_lr = nsec_entry;
 	nsec_ctx->mon_spsr = CPSR_MODE_SVC | CPSR_I;
 
@@ -120,8 +120,8 @@ static void init_vfp_nsec(void)
 static void init_vfp_nsec(void)
 {
 	/* Normal world can use CP10 and CP11 (SIMD/VFP) */
-	MSG("TODO: debug init_vfp_nsec function!");
-/* TODO: 	write_nsacr(read_nsacr() | NSACR_CP10 | NSACR_CP11); */
+    IMSG("Unless board supports secure mode, OPTEE function init_vfp_nsec() will fail");
+ 	//TODO: write_nsacr(read_nsacr() | NSACR_CP10 | NSACR_CP11);
 }
 #endif
 
@@ -879,7 +879,6 @@ void generic_boot_init_primary(unsigned long pageable_part,
 			       unsigned long nsec_entry, unsigned long fdt)
 {
 	init_primary_helper(pageable_part, nsec_entry, fdt);
-FMSG("return from generic_boot_init_primary");
 }
 
 void generic_boot_init_secondary(unsigned long nsec_entry)

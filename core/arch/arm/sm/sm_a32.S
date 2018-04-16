@@ -341,6 +341,11 @@ UNWIND(	.fnstart)
 	/* Set monitor stack */
 	mrs	r1, cpsr
 	cps	#CPSR_MODE_MON
+#if 0
+	/* NOTE: Initialisation of ARM into Secure Monitor Mode needs a secure board
+	 *       so the stack initialisation and rest of this function must be
+	 *       commented out until this is the case */
+
 	/* Point just beyond sm_ctx.sec */
 	sub	sp, r0, #(SM_CTX_SIZE - SM_CTX_NSEC)
 
@@ -407,12 +412,8 @@ UNWIND(	.fnstart)
 #endif
 	/* Set monitor vector (MVBAR) */
 1:	ldr	r0, =sm_vect_table
-	/* ToDo: this can not be done unless U-Boot has launched OPTEE in
-	 * secure mode. 'Normal' U-Boot jumps to supervisor mode, so we can
-	 * not execute this instruction from this normal world - so we need
-	 * a modified secure U-Boot */ 
-2:	//ToDo write_mvbar r0
-
+2:	write_mvbar r0
+#endif
 	bx	lr
 END_FUNC sm_init
 KEEP_PAGER sm_init
