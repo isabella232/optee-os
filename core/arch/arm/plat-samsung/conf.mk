@@ -9,7 +9,6 @@
 CFG_TEE_TA_LOG_LEVEL ?= 4
 
 $(call force,CFG_ARM32_core,y)
-$(call force,CFG_PL011,y)
 $(call force,CFG_GENERIC_BOOT,y)
 $(call force,CFG_PM_STUBS,y)
 $(call force,CFG_WITH_ARM_TRUSTED_FW,n)
@@ -26,6 +25,7 @@ CFG_NUM_THREADS ?= 4
 # CFG_CORE_WORKAROUND_SPECTRE_BP ?= n
 
 ifeq ($(PLATFORM_FLAVOR),artik520)
+  $(call force,CFG_EXYNOS4210_UART,y)
   CFG_NS_ENTRY_ADDR ?= 0x40008000
   CFG_DT_ADDR ?= 0x40800000
   CFG_DT ?= y
@@ -33,6 +33,7 @@ ifeq ($(PLATFORM_FLAVOR),artik520)
 endif
 
 ifeq ($(PLATFORM_FLAVOR),artik530)
+  $(call force,CFG_PL011,y)
   CFG_NS_ENTRY_ADDR ?= 0x91080000
   CFG_DT_ADDR ?= 0x9B000000
   CFG_DT ?= y

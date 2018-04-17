@@ -9,55 +9,54 @@
 #define STACK_ALIGNMENT			64
 
 /* ARTIK 520/530/530S has 512MB DRAM (Note 530S-1GB doubles this size to 1GB) */
-#define DRAM0_SIZE          0x1F000000
+#define DRAM0_SIZE		0x1F000000
 /* 64MB at top of memory map for factory info etc, also add memory for TEE */
-#define DRAM0_SIZE_NSEC		0x17000000
+#define DRAM0_SIZE_NSEC	0x17000000
 
 /* Platform specific defines */
 #if defined(PLATFORM_FLAVOR_artik520)
-#  define DRAM0_BASE   0x40000000
+#  define DRAM0_BASE	0x40000000
 
    /* ARTIK520 has dual core Cortex-A7 */
-#  define CFG_TEE_CORE_NB_CORE          2
+#  define CFG_TEE_CORE_NB_CORE 2
 
    /* s3c2410_serial */
-#  define BASEADDR_UART0		           (0x13800000)
+#  define BASEADDR_UART0			0x13800000
    /* s3c2410_serial /dev/ttySAC1 zigbee daemon */
-#  define BASEADDR_UART1		           (0x13810000)
+#  define BASEADDR_UART1			0x13810000
    /* s3c2410_serial /dev/ttySAC2 debug console */
-#  define BASEADDR_UART2		           (0x13820000)
+#  define BASEADDR_UART2			0x13820000
    /* s3c2410_serial */
-#  define BASEADDR_UART3		           (0x13830000)
+#  define BASEADDR_UART3			0x13830000
    /* console UART defined for /dev/ttySAC2 */
-#  define CONSOLE_UART_BASE             BASEADDR_UART2
-/* rely on bootloader to set clock divisor; trouble determining clock rate */
-#  define CONSOLE_BAUDRATE              0
-   /* EXYNOS4210 UART clocks set to 0.75Mz */
-#  define CONSOLE_UART_CLK_IN_HZ		750000
+#  define CONSOLE_UART_BASE			BASEADDR_UART2
+#  define CONSOLE_BAUDRATE			115200
+   /* EXYNOS4210 UART clocks set to 50Mz */
+#  define CONSOLE_UART_CLK_IN_HZ	50000000
 
 #elif defined(PLATFORM_FLAVOR_artik530)
-#  define DRAM0_BASE   0x91000000
+#  define DRAM0_BASE	0x91000000
 
    /* ARTIK530 has quad core Cortex-A9 */
-#  define CFG_TEE_CORE_NB_CORE          4
+#  define CFG_TEE_CORE_NB_CORE 4
 
    /* dma (O), modem(X), UART0_MODULE */
-#  define BASEADDR_UART0		           (0xC00A1000)
+#  define BASEADDR_UART0			0xC00A1000
    /* dma (O), modem(O), pl01115_Uart_modem_MODULE */
-#  define BASEADDR_UART1		           (0xC00A0000)
+#  define BASEADDR_UART1			0xC00A0000
    /* dma (O), modem(X), UART1_MODULE */
-#  define BASEADDR_UART2		           (0xC00A2000)
+#  define BASEADDR_UART2			0xC00A2000
    /* dma (X), modem(X), pl01115_Uart_nodma0_MODULE */
-#  define BASEADDR_UART3		           (0xC00A3000)
+#  define BASEADDR_UART3			0xC00A3000
    /* dma (X), modem(X), pl01115_Uart_nodma1_MODULE */
-#  define BASEADDR_UART4		           (0xC006D000)
+#  define BASEADDR_UART4			0xC006D000
    /* dma (X), modem(X), pl01115_Uart_nodma2_MODULE */
-#  define BASEADDR_UART5		           (0xC006F000)
+#  define BASEADDR_UART5			0xC006F000
    /* console UART defined for /dev/ttyAMA3 */
-#  define CONSOLE_UART_BASE             BASEADDR_UART3
-#  define CONSOLE_BAUDRATE              115200
+#  define CONSOLE_UART_BASE			BASEADDR_UART3
+#  define CONSOLE_BAUDRATE			115200
    /* UART clocks set to 50 MHz (50000000 Hz) */
-#  define CONSOLE_UART_CLK_IN_HZ        0x02FAF080
+#  define CONSOLE_UART_CLK_IN_HZ	0x02FAF080
 
 #else
 #  error "Unknown ARTIK platform PLATFORM_FLAVOR"
@@ -116,7 +115,7 @@
 #  error "No TEE/TZ reserved DDR start address because DRAM0_BASE undefined"
 #endif
 
-/* ARTIK devices do not have SRAM */
+/* ARTIK devices do not have SRAM, so ensure none is configured */
 #ifdef TZSRAM_BASE
 #  error "Invalid TZSRAM_BASE, ARTIK devices do not have SRAM "
 #endif
