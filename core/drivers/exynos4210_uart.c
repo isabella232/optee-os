@@ -32,31 +32,31 @@
 #define UART_INTM	0x0038 /* interrupt mask set/clear */
 
 /* UART Line Control register UART_LCON */
-#define UART_LINE_MODE_NORMAL	(0 << 6)
-#define UART_LINE_MODE_INFRARED	(1 << 6)
+#define UART_LINE_MODE_NORMAL	0
+#define UART_LINE_MODE_INFRARED	BIT(6)
 #define UART_PARITY_NONE		(0 << 3)
 #define UART_PARITY_ODD			(4 << 3)
 #define UART_PARITY_EVEN		(5 << 3)
 #define UART_PARITY_FORCED_1	(6 << 3)
 #define UART_PARITY_FORCED_0	(7 << 3)
-#define UART_STOP_1BIT			(0 << 2) 
-#define UART_STOP_2BIT			(1 << 2) 
+#define UART_STOP_1BIT			0 
+#define UART_STOP_2BIT			BIT(2) 
 #define UART_DATA_LEN_5BIT		0
 #define UART_DATA_LEN_6BIT		1
 #define UART_DATA_LEN_7BIT		2
 #define UART_DATA_LEN_8BIT		3
 
 /* UART Control register UART_CON */
-#define UART_TX_INT_LEVEL	(1 << 9)
-#define UART_RX_INT_LEVEL	(1 << 8)
-#define UART_RX_TIMEOUT_DIS	(0 << 7)
-#define UART_RX_TIMEOUT_EN	(1 << 7)
-#define UART_RX_ERR_INT_DIS	(0 << 6)
-#define UART_RX_ERR_INT_EN	(1 << 6)
-#define UART_OP_NORMAL		(0 << 5)
-#define UART_OP_LOOPBACK	(1 << 5)
-#define UART_TX_NORMAL		(0 << 4)
-#define UART_TX_BREAK		(1 << 4)
+#define UART_TX_INT_LEVEL	BIT(9)
+#define UART_RX_INT_LEVEL	BIT(8)
+#define UART_RX_TIMEOUT_DIS	0
+#define UART_RX_TIMEOUT_EN	BIT(7)
+#define UART_RX_ERR_INT_DIS	0
+#define UART_RX_ERR_INT_EN	BIT(6)
+#define UART_OP_NORMAL		0
+#define UART_OP_LOOPBACK	BIT(5)
+#define UART_TX_NORMAL		0
+#define UART_TX_BREAK		BIT(4)
 #define UART_TX_MODE_DIS	(0 << 2)
 #define UART_TX_MODE_POLL	(1 << 2)
 #define UART_TX_MODE_DMA	(2 << 2)
@@ -66,29 +66,29 @@
 
 /* UART FIFO Control register UART_UFCON */
 /* Tx FIFO trigger level (chan0 = 32, chan1 & chan4 = 8, chan2 & chan3 = 2) */
-#define UART_TX_FIFO_TRIG_LEVEL	(1 << 8)
+#define UART_TX_FIFO_TRIG_LEVEL	BIT(8)
 /* Rx FIFO trigger level (chan0 = 64, chan1 & chan4 = 16, chan2 & chan3 = 4) */
-#define UART_RX_FIFO_TRIG_LEVEL	(1 << 4)
+#define UART_RX_FIFO_TRIG_LEVEL	BIT(4)
 /* Auto-clears after resetting Tx FIFO: */
-#define UART_TX_FIFO_NORMAL		(0 << 2)
-#define UART_TX_FIFO_RESET		(1 << 2)
+#define UART_TX_FIFO_NORMAL		0
+#define UART_TX_FIFO_RESET		BIT(2)
 /* Auto-clears after resetting Rx FIFO: */
-#define UART_RX_FIFO_NORMAL		(0 << 1)
-#define UART_RX_FIFO_RESET		(1 << 1)
+#define UART_RX_FIFO_NORMAL		0
+#define UART_RX_FIFO_RESET		BIT(1)
 #define UART_FIFO_DIS			0
-#define UART_FIFO_EN			1
+#define UART_FIFO_EN			BIT(0)
 
 /* UART Tx/Rx Status register UART_TRSTAT */
-#define UART_RX_TIMEOUT			(1 << 3)
-#define UART_TRANSMIT_EMPTY		(1 << 2)
-#define UART_TX_BUFFER_EMPTY	(1 << 1)
-#define UART_RX_BUFFER_READY	1
+#define UART_RX_TIMEOUT			BIT(3)
+#define UART_TRANSMIT_EMPTY		BIT(2)
+#define UART_TX_BUFFER_EMPTY	BIT(1)
+#define UART_RX_BUFFER_READY	BIT(0)
 
 /* UART FIFO Status register UART_FSTAT */
-#define UART_TX_FIFO_FULL		(1 << 24)
+#define UART_TX_FIFO_FULL		BIT(24)
 #define UART_TX_FIFO_CNT_SHIFT	16
 #define UART_TX_FIFO_CNT		(0xFF << UART_TX_FIFO_CNT_SHIFT)
-#define UART_RX_FIFO_FULL		(1 << 8)
+#define UART_RX_FIFO_FULL		BIT(8)
 #define UART_RX_FIFO_CNT		0xFF
 
 static vaddr_t chip_to_base(struct serial_chip *chip)
