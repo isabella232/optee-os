@@ -102,8 +102,8 @@ void time_source_init(void) {
     IMSG("NOTE: not sure why time_source_init(void) is needed");
 }
 
-void debug_reset_primary(int smc_call)
+void debug_reset_primary(int smc_r0, int smc_r2, int smc_r3, int smc_r4)
 {
-	FMSG("Enabled Secure Monitor interrupts, SMC = 0x%X", smc_call);
+	FMSG("Enabled Secure Monitor interrupts, SMC = 0x%X, 0x%X, 0x%X, 0x%X", smc_r0, smc_r2, smc_r3, smc_r4);
 }
 

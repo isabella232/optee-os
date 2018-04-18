@@ -105,7 +105,6 @@ __weak void init_sec_mon(unsigned long nsec_entry)
 
 	/* Initialize secure monitor */
 	nsec_ctx = sm_get_nsec_ctx();
-	DMSG("Unless board supports secure mode, OPTEE function sm_get_nsec_ctx has no effect");
 	nsec_ctx->mon_lr = nsec_entry;
 	nsec_ctx->mon_spsr = CPSR_MODE_SVC | CPSR_I;
 
@@ -120,8 +119,7 @@ static void init_vfp_nsec(void)
 static void init_vfp_nsec(void)
 {
 	/* Normal world can use CP10 and CP11 (SIMD/VFP) */
-    IMSG("Unless board supports secure mode, OPTEE function init_vfp_nsec() will fail");
- 	//TODO: write_nsacr(read_nsacr() | NSACR_CP10 | NSACR_CP11);
+    write_nsacr(read_nsacr() | NSACR_CP10 | NSACR_CP11);
 }
 #endif
 

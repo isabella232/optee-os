@@ -135,7 +135,7 @@ static TEE_Result generate_fek(uint8_t *key, uint8_t len)
 	return crypto_rng_read(key, len);
 }
 
-static __maybe_unused TEE_Result tee_fs_init_key_manager(void)
+static TEE_Result tee_fs_init_key_manager(void)
 {
 	int res = TEE_SUCCESS;
 	struct tee_hw_unique_key huk;
@@ -280,6 +280,4 @@ exit:
 	return res;
 }
 
-/* DEBUG!!!! removed temporarily until crypto is in place
 service_init_late(tee_fs_init_key_manager);
-DEBUG!!! */

@@ -130,7 +130,7 @@
 
 #ifndef ASM
 	/* ToDo: this is temporary debug */
-	void debug_reset_primary(int smc_call);
+	void debug_reset_primary(int smc_r0, int smc_r2, int smc_r3, int smc_r4);
 #endif
 
 #endif /*PLATFORM_CONFIG_H*/
