@@ -141,6 +141,7 @@ void pl011_init(struct pl011_data *pd, paddr_t pbase, uint32_t uart_clk,
 
 	pd->base.pa = pbase;
 	pd->chip.ops = &pl011_ops;
+	pd->base.va = 0;
 
 	base = io_pa_or_va(&pd->base);
 
@@ -193,7 +194,7 @@ static int pl011_dev_init(struct serial_chip *chip, const void *fdt, int offs,
 	if (dt_map_dev(fdt, offs, &vbase, &size) < 0)
 		return -1;
 
-	if (size != 0x1000) {
+	if (size != PL011_REG_SIZE) {
 		EMSG("pl011: unexpected register size: %zx", size);
 		return -1;
 	}

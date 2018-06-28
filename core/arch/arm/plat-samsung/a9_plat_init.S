@@ -56,21 +56,19 @@
 FUNC plat_cpu_reset_early , :
 UNWIND(	.fnstart)
 
-	/*
-	 * Disallow NSec to mask FIQ [bit4: FW=0]
-	 * Allow NSec to manage Imprecise Abort [bit5: AW=1]
-	 * Imprecise Abort trapped to Abort Mode [bit3: EA=0]
-	 * In Sec world, FIQ trapped to FIQ Mode [bit2: FIQ=0]
-	 * IRQ always trapped to IRQ Mode [bit1: IRQ=0]
-	 * Secure World [bit0: NS=0]
-	 */
+	// write Secure Configuration Register (only accessible in secure world)
 	mov r0, #SCR_AW
+	write_scr r0
 
-	/* ToDo: this can not be done unless U-Boot has launched OPTEE in
-	 * secure mode. 'Normal' U-Boot jumps to supervisor mode, so we can
-	 * not execute this instruction from this normal world - and we need
-	 * a modified secure U-Boot */
-	//ToDo write_scr r0		/* write Secure Configuration Register */
+	// System ConTroL Register SCTLR
+	mov r0, #SCTLR_RR
+	write_sctlr r0
+
+	// Auxiliary ConTroL Register ACTRL
+
+	// NonSecure Access Control Register NSACR (write only from secure world)
+
+	// Power Control Register PCR
 
 	mov pc, lr
 UNWIND(	.fnend)

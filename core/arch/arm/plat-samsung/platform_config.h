@@ -6,12 +6,15 @@
 #ifndef PLATFORM_CONFIG_H
 #define PLATFORM_CONFIG_H
 
-#define STACK_ALIGNMENT			64
-
-/* ARTIK 520/530/530S has 512MB DRAM (Note 530S-1GB doubles this size to 1GB) */
-#define DRAM0_SIZE		0x1F000000
-/* 64MB at top of memory map for factory info etc, also add memory for TEE */
-#define DRAM0_SIZE_NSEC	0x17000000
+/* 
+ * ARTIK 520/530/530S has 512MB DRAM (Note 530S-1GB doubles this size to 1GB) 
+ * of which the top 16MB is secure, the rest non-secure
+ */
+#define DRAM0_SIZE			0x20000000
+#define DRAM0_SIZE_NSEC		0x1F000000
+#define DRAM0_SIZE_SEC		0x01000000
+/* 64MB at top of the non-secure memory map used for factory info etc */
+#define DRAM0_SIZE_RSVD		0x04000000
 
 /* Platform specific defines */
 #if defined(PLATFORM_FLAVOR_artik520)
@@ -19,6 +22,9 @@
 
    /* ARTIK520 has dual core Cortex-A7 */
 #  define CFG_TEE_CORE_NB_CORE 2
+
+   /* Generic Interrupt Controller (values TBC) */
+#  define GIC_BASE					0x10000000
 
    /* s3c2410_serial */
 #  define BASEADDR_UART0			0x13800000
@@ -39,6 +45,9 @@
 
    /* ARTIK530 has quad core Cortex-A9 */
 #  define CFG_TEE_CORE_NB_CORE 4
+
+   /* Generic Interrupt Controller */
+#  define GIC_BASE					0xF0000000
 
    /* dma (O), modem(X), UART0_MODULE */
 #  define BASEADDR_UART0			0xC00A1000
@@ -62,45 +71,39 @@
 #  error "Unknown ARTIK platform PLATFORM_FLAVOR"
 #endif
 
-#define GIC_BASE			0x00A00000
-#define GICD_OFFSET			0x1000
-#define GICC_OFFSET			0x100
-
 /*
- * Trusted Execution Environment / Trusted Zone memory layout:
+ * Trusted Execution Environment / Trust Zone memory layout:
  *
  *  +--------------------------------+ <-- DRAM0_BASE + DRAM0_SIZE
- *  | NSec Linux Factory Info 64MB   |      ^ 0x04000000
- *  +--------------------------------+ <----v
- *  | Unused                         |
- *  +--------------------------------+ <-----
  *  |                    |      TEE  |      ^
  *  | TEE/TZ and NSec    |   4MB ----|      | CFG_SHMEM_SIZE
  *  |   shared memory    |     NSec  |      v
  *  +--------------------------------+ <-- CFG_SHMEM_START         ^
  *  |                    |           |      ^                      |
  *  |                    |  TA_RAM   |      | CFG_TA_RAM_SIZE      |
- *  |                    |  16MB     |      v                      | TZDRAM_SIZE
+ *  |                    |  11MB     |      v                      | TZDRAM_SIZE
  *  | TEE/TZ secure RAM  +-----------+ <-----                      |
  *  |                    |  TEE R/W  |      ^                      |
  *  |                    |   1MB ----|      | CFG_TEE_RAM_VA_SIZE  |
  *  |                    |  TEE R/X  |      v                      |
  *  +--------------------------------+ <-- TZDRAM_BASE             v
+ *  | NSec Linux Factory Info 64MB   |      ^ DRAM0_SIZE_RSVD
+ *  +--------------------------------+ <----v
  *  |                                |      ^
  *  | NSec Linux, FDT, rootfs, etc   |      | DRAM0_SIZE_NSEC
  *  |                                |      v
  *  +--------------------------------+ <-- DRAM0_BASE
  *
  *  TEE RAM   :  1 MB
- *  TA RAM    : 16 MB
+ *  TA RAM    : 11 MB
  *  SHMEM RAM :  4 MB
- *  Total     : 21 MB (allocated 64MB)
+ *  Total     : 16 MB (allocated 16MB at top of DRAM)
  */
 
 /* define the secure/shared/not-secure memory areas */
 #define CFG_TEE_RAM_VA_SIZE  (1024 * 1024)
 #define CFG_TEE_RAM_PH_SIZE  (CFG_TEE_RAM_VA_SIZE)
-#define CFG_TA_RAM_SIZE      (16 * 1024 * 1024)
+#define CFG_TA_RAM_SIZE      (11 * 1024 * 1024)
 #define TZDRAM_BASE          ((DRAM0_BASE) + (DRAM0_SIZE_NSEC))
 #define TZDRAM_SIZE          ((CFG_TEE_RAM_PH_SIZE) + (CFG_TA_RAM_SIZE))
 #define CFG_SHMEM_START      ((TZDRAM_BASE) + (TZDRAM_SIZE))
@@ -128,9 +131,12 @@
 #  error "Invalid CFG_SHMEM_SIZE: >= 4MB required for GlobalPlatform test suite"
 #endif
 
-#ifndef ASM
-	/* ToDo: this is temporary debug */
-	void debug_reset_primary(int smc_r0, int smc_r2, int smc_r3, int smc_r4);
-#endif
+/* Make stacks aligned to data cache line length */
+#define STACK_ALIGNMENT		32
+
+/* GIC Distributor */
+#define GICD_OFFSET				0x1000
+/* GIC CPU interface */
+#define GICC_OFFSET				0x100
 
 #endif /*PLATFORM_CONFIG_H*/
